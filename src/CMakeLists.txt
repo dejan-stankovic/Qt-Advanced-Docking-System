@@ -83,32 +83,43 @@ write_basic_package_version_file(
     VERSION ${VERSION_SHORT}
     COMPATIBILITY SameMajorVersion
 )
+
+if(INSTALL_ALL)
 install(FILES ${ads_HEADERS}
     DESTINATION include 
     COMPONENT headers
 )
+
 install(FILES 
     "${CMAKE_SOURCE_DIR}/LICENSE"
     "${CMAKE_SOURCE_DIR}/gnu-lgpl-v2.1.md"
     DESTINATION license 
     COMPONENT license
-)
+  )
+install(EXPORT adsTargets
+  FILE adsTargets.cmake
+  NAMESPACE ads::
+  DESTINATION lib/cmake/qtadvanceddocking
+  )
+install(FILES qtadvanceddockingConfig.cmake "${CMAKE_CURRENT_BINARY_DIR}/qtadvanceddockingConfigVersion.cmake"
+  DESTINATION lib/cmake/qtadvanceddocking
+  )
 install(TARGETS qtadvanceddocking
+  EXPORT adsTargets
+  RUNTIME DESTINATION bin
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib
+  INCLUDES DESTINATION include
+  )
+else()
+  install(TARGETS qtadvanceddocking
     EXPORT adsTargets
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib
-    INCLUDES DESTINATION include
-)
+    )
 
-install(EXPORT adsTargets
-    FILE adsTargets.cmake
-    NAMESPACE ads::
-    DESTINATION lib/cmake/qtadvanceddocking
-)
-install(FILES qtadvanceddockingConfig.cmake "${CMAKE_CURRENT_BINARY_DIR}/qtadvanceddockingConfigVersion.cmake"
-    DESTINATION lib/cmake/qtadvanceddocking
-)
+endif()
 
 target_include_directories(qtadvanceddocking PUBLIC
     $<INSTALL_INTERFACE:include>
